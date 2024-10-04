@@ -52,6 +52,11 @@ const gaugeLightBatteryLevel = new prom.Gauge({
     'help': 'Lighting device battery level 0-100 or 0-255',
     'labelNames': labelNames,
 });
+const gaugeLightLastUpdate = new prom.Gauge({
+    'name': appName + '_light_last_update',
+    'help': 'Lighting device last update timestamp',
+    'labelNames': labelNames,
+});
 const gaugeTempTemp = new prom.Gauge({
     'name': appName + '_temp_temp',
     'help': 'Temperature device temperature',
@@ -65,6 +70,11 @@ const gaugeTempHumidity = new prom.Gauge({
 const gaugeTempBatteryLevel = new prom.Gauge({
     'name': appName + '_temp_battery_level',
     'help': 'Temperature device battery level 0-100 or 0-255',
+    'labelNames': labelNames,
+});
+const gaugeTempLastUpdate = new prom.Gauge({
+    'name': appName + '_temp_last_update',
+    'help': 'Temperature device last update timestamp',
     'labelNames': labelNames,
 });
 const gaugeWeatherTemp = new prom.Gauge({
@@ -87,6 +97,11 @@ const gaugeWeatherBatteryLevel = new prom.Gauge({
     'help': 'Weather device battery level 0-100 or 0-255',
     'labelNames': labelNames,
 });
+const gaugeWeatherLastUpdate = new prom.Gauge({
+    'name': appName + '_weather_last_update',
+    'help': 'Weather device last update timestamp',
+    'labelNames': labelNames,
+});
 const gaugeUtilityData = new prom.Gauge({
     'name': appName + '_utility_data',
     'help': 'Utility device data',
@@ -102,6 +117,11 @@ const gaugeUtilityBatteryLevel = new prom.Gauge({
     'help': 'Utility device battery level 0-100 or 0-255',
     'labelNames': labelNames,
 });
+const gaugeUtilityLastUpdate = new prom.Gauge({
+    'name': appName + '_utility_last_update',
+    'help': 'Utility device last update timestamp',
+    'labelNames': labelNames,
+});
 
 // Register all metrics
 console.log(`INFO: Registering Prometheus metrics...`);
@@ -109,16 +129,20 @@ const register = new prom.Registry();
 register.registerMetric(gaugeLightLevel);
 register.registerMetric(gaugeLightStatus);
 register.registerMetric(gaugeLightBatteryLevel);
+register.registerMetric(gaugeLightLastUpdate);
 register.registerMetric(gaugeTempTemp);
 register.registerMetric(gaugeTempHumidity);
 register.registerMetric(gaugeTempBatteryLevel);
+register.registerMetric(gaugeTempLastUpdate);
 register.registerMetric(gaugeWeatherTemp);
 register.registerMetric(gaugeWeatherHumidity);
 register.registerMetric(gaugeWeatherBarometer);
 register.registerMetric(gaugeWeatherBatteryLevel);
+register.registerMetric(gaugeWeatherLastUpdate);
 register.registerMetric(gaugeUtilityData);
 register.registerMetric(gaugeUtilityUsage);
 register.registerMetric(gaugeUtilityBatteryLevel);
+register.registerMetric(gaugeUtilityLastUpdate);
 if (collectDefaultMetrics) {
     prom.collectDefaultMetrics({
         timeout: 5000,
@@ -218,6 +242,9 @@ async function gatherMetrics() {
                 if (device.BatteryLevel !== undefined && !isNaN(device.BatteryLevel)) {
                     gaugeLightBatteryLevel.set(labels, device.BatteryLevel);
                 }
+                if (device.LastUpdate !== undefined) {
+		   gaugeLightLastUpdate.set(labels, Date.parse(device.LastUpdate)); 
+		}
             }
             debug(`Lights = ${lights.result.length}`);
         }
@@ -235,6 +262,9 @@ async function gatherMetrics() {
                 if (device.BatteryLevel !== undefined && !isNaN(device.BatteryLevel)) {
                     gaugeTempBatteryLevel.set(labels, device.BatteryLevel);
                 }
+                if (device.LastUpdate !== undefined) {
+		   gaugeTempLastUpdate.set(labels, Date.parse(device.LastUpdate)); 
+		}
             }
             debug(`Temps = ${temps.result.length}`);
         }
@@ -255,6 +285,9 @@ async function gatherMetrics() {
                 if (device.BatteryLevel !== undefined && !isNaN(device.BatteryLevel)) {
                     gaugeWeatherBatteryLevel.set(labels, device.BatteryLevel);
                 }
+                if (device.LastUpdate !== undefined) {
+		   gaugeWeatherLastUpdate.set(labels, Date.parse(device.LastUpdate)); 
+		}
             }
             debug(`Weathers = ${weathers.result.length}`);
         }
@@ -280,6 +313,9 @@ async function gatherMetrics() {
                 if (device.BatteryLevel !== undefined && !isNaN(device.BatteryLevel)) {
                     gaugeUtilityBatteryLevel.set(labels, device.BatteryLevel);
                 }
+                if (device.LastUpdate !== undefined) {
+		   gaugeUtilityLastUpdate.set(labels, Date.parse(device.LastUpdate)); 
+		}
             }
             debug(`Utilities = ${utilities.result.length}`);
         }
