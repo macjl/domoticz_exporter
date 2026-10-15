@@ -4,23 +4,27 @@
   "description": "Domoticz exporter for Prometheus.io",
   "main": "domoticz_exporter.js",
   "scripts": {
-    "start": "node domoticz_exporter.js"
+    "start": "node domoticz_exporter.js",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wywywywy/domoticz_exporter.git"
+    "url": "git+https://github.com/macjl/domoticz_exporter.git"
   },
   "author": "wywywywy",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/wywywywy/domoticz_exporter/issues"
+    "url": "https://github.com/macjl/domoticz_exporter/issues"
   },
-  "homepage": "https://github.com/wywywywy/domoticz_exporter#readme",
+  "homepage": "https://github.com/macjl/domoticz_exporter#readme",
   "dependencies": {
     "command-line-args": "^5.2.1",
     "dotenv": "^16.3.1",
     "moment": "^2.29.4",
     "node-fetch": "^2.7.0",
     "prom-client": "^13.2.0"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

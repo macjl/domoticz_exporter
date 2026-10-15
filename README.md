@@ -2,6 +2,14 @@ Domoticz exporter for Prometheus.io, written in Node.js.
 
 This exporter provides metrics for the devices defined in Domoticz, rather than for Domoticz itself.
 
+# Origin and fork changes
+
+This project is a fork of [wywywywy/domoticz_exporter](https://github.com/wywywywy/domoticz_exporter), originally written by wywywywy. The original author attribution and Apache License 2.0 are preserved.
+
+The macjl fork adds `domoticz_light_last_update`, `domoticz_temp_last_update`, `domoticz_weather_last_update`, and `domoticz_utility_last_update`. These gauges expose Domoticz `LastUpdate` as milliseconds since the Unix epoch (the existing fork behavior). Dates without a timezone are interpreted in the exporter's local timezone.
+
+This fork also uses Node.js 24 LTS and publishes its own multiarchitecture image to `ghcr.io/macjl/domoticz_exporter`. The upstream Docker Hub image is maintained separately and does not include these fork additions.
+
 # Usage
 
 ## Arguments
@@ -28,18 +36,32 @@ The arguments can also be set as env variables instead. Useful if you're using i
 
 ## From Source
 
-Node 16+ is required to run it.
+Node.js 24 LTS and its bundled npm are required for the supported runtime.
 
-    git clone git@github.com:wywywywy/domoticz_exporter.git
+    git clone https://github.com/macjl/domoticz_exporter.git
     cd domoticz_exporter
-    npm install
+    npm ci
     npm start
 
-Recommend npm version >= 6.
+Run `npm test` to check startup, polling, and metrics against a simulated Domoticz server.
 
 ## With Docker
 
-    docker run -d --restart=always -p 9486:9486 wywywywy/domoticz_exporter:latest
+```sh
+docker run -d --name domoticz-exporter --restart=always \
+  -p 9486:9486 \
+  -e DOMOTICZ_HOSTIP=192.168.1.10 \
+  -e DOMOTICZ_HOSTPORT=8080 \
+  ghcr.io/macjl/domoticz_exporter:latest
+```
+
+Replace `192.168.1.10` with the address of your Domoticz server reachable from the container. Container `127.0.0.1` refers to the exporter container itself. Metrics are available at `http://localhost:9486/`.
+
+Images support `linux/amd64` and `linux/arm64`. After this change is merged, pushes to `master` publish `latest` and a UTC date tag (`YYYYMMDD`, replaced on another build the same day). Version tags such as `v1.0.3` publish `1.0.3` without changing `latest`. Pull requests build both architectures without publishing. Manual runs publish only from `master` or a version tag.
+
+Publication uses the repository's `GITHUB_TOKEN` with `contents: read` and `packages: write`; Docker Hub secrets or a personal token are not required. Enable GitHub Actions in the fork. After the first publication, set the GHCR package visibility to **Public** in its package settings to allow anonymous pulls. If a package with this name already exists, ensure this repository has Actions write access to it.
+
+The image will become available after a successful publishing workflow; opening the PR does not publish it.
 
 ## Prometheus Config
 
