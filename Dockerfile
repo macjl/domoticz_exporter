@@ -1,10 +1,10 @@
-FROM node:16-alpine
+FROM node:24-alpine
 
 RUN mkdir -p /app
 WORKDIR /app
 
 COPY package*.json /app/
-RUN npm ci
+RUN npm ci --omit=dev
 
 COPY domoticz_exporter.js /app/
 
